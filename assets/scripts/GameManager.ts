@@ -5,6 +5,7 @@ import { Move } from "./Move";
 import { PipeSpawner } from "./PipeSpawner";
 import { ReadyUI } from "./UI/ReadyUI";
 import { GameData } from "./GameData";
+import { GameOverUI } from "./UI/GameOverUI";
 const { ccclass, property } = _decorator;
 
 @ccclass("GameManager")
@@ -39,6 +40,9 @@ export class GameManager extends Component {
   @property(Label)
   scoreLabel: Label = null;
 
+  @property(GameOverUI)
+  gameOverUI: GameOverUI = null;
+
   status: Status;
 
   start() {
@@ -49,33 +53,46 @@ export class GameManager extends Component {
   update(deltaTime: number) {}
 
   transitionToReady() {
+    if (this.status === Status.READY) return;
+
     this.status = Status.READY;
     this.bird.updateStatus(Status.READY);
     this.bg.updateStatus(Status.READY);
     this.land.updateStatus(Status.READY);
     this.pipeSpawner.updateStatus(Status.READY);
-    // 隐藏进行中 UI
+
+    this.readyUI.show();
     this.runningUI.active = false;
+    this.gameOverUI.hide();
   }
 
   transitionToRunning() {
+    if (this.status === Status.RUNNING) return;
+
     this.status = Status.RUNNING;
     this.bird.updateStatus(Status.RUNNING);
     this.bg.updateStatus(Status.RUNNING);
     this.land.updateStatus(Status.RUNNING);
     this.pipeSpawner.updateStatus(Status.RUNNING);
-    // 隐藏准备 UI
-    this.readyUI.node.active = false;
-    // 显示进行中 UI
+
+    this.readyUI.hide();
     this.runningUI.active = true;
+    this.gameOverUI.hide();
   }
 
   transitionToGameOver() {
+    if (this.status === Status.GAME_OVER) return;
+
     this.status = Status.GAME_OVER;
     this.bird.updateStatus(Status.GAME_OVER);
     this.bg.updateStatus(Status.GAME_OVER);
     this.land.updateStatus(Status.GAME_OVER);
     this.pipeSpawner.updateStatus(Status.GAME_OVER);
+
+    this.readyUI.hide();
+    this.runningUI.active = false;
+    this.gameOverUI.show(GameData.getScore(), GameData.getBestScore());
+    GameData.setBestScore();
   }
 
   addScore(score = 1) {

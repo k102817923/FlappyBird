@@ -1,5 +1,6 @@
 import { _decorator, Component, instantiate, math, Prefab } from "cc";
 import { Status } from "./Enum";
+import { Pipe } from "./Pipe";
 const { ccclass, property } = _decorator;
 
 @ccclass("PipeSpawner")
@@ -37,5 +38,13 @@ export class PipeSpawner extends Component {
 
   public updateStatus(status: Status) {
     this.status = status;
+
+    if (status === Status.GAME_OVER) {
+      const childrens = this.node.children;
+      for (let i = 0; i < childrens.length; i++) {
+        const pipe = childrens[i].getComponent(Pipe);
+        if (pipe) pipe.enabled = false;
+      }
+    }
   }
 }

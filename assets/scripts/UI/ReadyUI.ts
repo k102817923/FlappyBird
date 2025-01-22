@@ -1,6 +1,6 @@
 import { _decorator, Component, Input, input, Node } from "cc";
 import { GameManager } from "../GameManager";
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 @ccclass("ReadyUI")
 export class ReadyUI extends Component {
@@ -16,5 +16,13 @@ export class ReadyUI extends Component {
 
   onTouchStart() {
     GameManager.getInstance().transitionToRunning();
+  }
+
+  public show() {
+    this.node.active = true;
+  }
+
+  public hide() {
+    this.node.active = false;
   }
 }

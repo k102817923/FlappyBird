@@ -51,6 +51,7 @@ export class Bird extends Component {
     if (this.status !== Status.RUNNING) return;
 
     this.node.angle--;
+    if (this.node.angle > 60) this.node.angle = 60;
     if (this.node.angle < -60) this.node.angle = -60;
   }
 
@@ -68,7 +69,9 @@ export class Bird extends Component {
     otherCollider: Collider2D,
     contact: IPhysics2DContact | null
   ) {
-    console.log(otherCollider.tag);
+    if (otherCollider.tag !== Tags.PIPE_MIDDLE) {
+      GameManager.getInstance().transitionToGameOver();
+    }
   }
 
   onEndContact(
@@ -83,7 +86,9 @@ export class Bird extends Component {
 
   public updateStatus(status: Status) {
     this.status = status;
-    this.rigiBody2D.enabled = status === Status.RUNNING;
     this.getComponent(Animation).enabled = status === Status.RUNNING;
+    if (status !== Status.GAME_OVER) {
+      this.rigiBody2D.enabled = status === Status.RUNNING;
+    }
   }
 }
