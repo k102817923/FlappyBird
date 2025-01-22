@@ -4,7 +4,7 @@ const { ccclass } = _decorator;
 
 @ccclass("Pipe")
 export class Pipe extends Component {
-  private moveSpeed: number = 100;
+  private moveSpeed: number;
 
   start() {
     this.moveSpeed = GameManager.getInstance().moveSpeed;
@@ -15,5 +15,8 @@ export class Pipe extends Component {
       this.node.position.x - this.moveSpeed * deltaTime,
       this.node.position.y
     );
+
+    // 销毁管道超出屏幕左边界
+    if (this.node.position.x < -900) this.node.destroy();
   }
 }

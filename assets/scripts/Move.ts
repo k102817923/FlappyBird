@@ -1,16 +1,15 @@
 import { _decorator, Component, Node } from "cc";
 import { GameManager } from "./GameManager";
+import { Status } from "./Enum";
 const { ccclass, property } = _decorator;
 
-@ccclass("MoveBg")
-export class MoveBg extends Component {
+@ccclass("Move")
+export class Move extends Component {
   @property(Node)
   target1ToMove: Node = null;
 
   @property(Node)
   target2ToMove: Node = null;
-
-  private moveSpeed: number = 100;
 
   @property
   windowsWidth: number = 730;
@@ -18,11 +17,17 @@ export class MoveBg extends Component {
   @property
   bg2Position: number = 728;
 
+  private moveSpeed: number;
+
+  private status: Status = Status.READY;
+
   start() {
     this.moveSpeed = GameManager.getInstance().moveSpeed;
   }
 
   update(deltaTime: number) {
+    if (this.status !== Status.RUNNING) return;
+
     const moveDistance = this.moveSpeed * deltaTime;
 
     // 移动背景图1
@@ -54,5 +59,9 @@ export class MoveBg extends Component {
         this.target2ToMove.position.y
       );
     }
+  }
+
+  public updateStatus(status: Status) {
+    this.status = status;
   }
 }

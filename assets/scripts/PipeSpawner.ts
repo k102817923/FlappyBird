@@ -1,4 +1,5 @@
 import { _decorator, Component, instantiate, math, Prefab } from "cc";
+import { Status } from "./Enum";
 const { ccclass, property } = _decorator;
 
 @ccclass("PipeSpawner")
@@ -11,9 +12,13 @@ export class PipeSpawner extends Component {
 
   private timer: number = 1;
 
+  private status: Status = Status.READY;
+
   start() {}
 
   update(deltaTime: number) {
+    if (this.status !== Status.RUNNING) return;
+
     this.timer += deltaTime;
     if (this.timer > this.rate) {
       this.timer = 0;
@@ -28,5 +33,9 @@ export class PipeSpawner extends Component {
       const pLocal = pipeInstance.getPosition();
       pipeInstance.setPosition(pLocal.x, y);
     }
+  }
+
+  public updateStatus(status: Status) {
+    this.status = status;
   }
 }
