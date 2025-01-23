@@ -1,5 +1,5 @@
 export class GameData {
-  private static score: number = 0;
+  private static score = 0;
 
   private static readonly BEST_SCORE = "Best_Score";
 
@@ -21,5 +21,9 @@ export class GameData {
     if (this.getScore() > this.getBestScore()) {
       localStorage.setItem(this.BEST_SCORE, this.getScore().toString());
     }
+  }
+
+  public static resetScore() {
+    this.score = 0;
   }
 }

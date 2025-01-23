@@ -15,3 +15,32 @@ export enum Status {
   /** 游戏结束 */
   GAME_OVER,
 }
+
+export enum Medal {
+  /** 白牌 */
+  WHITE,
+  /** 铜牌 */
+  BRONZE,
+  /** 银牌 */
+  SILVER,
+  /** 金牌 */
+  GOLD,
+}
+
+export enum FlyAnimation {
+  /** Level1 */
+  Level1 = "Bird01_fly",
+  /** Level2 */
+  Level2 = "Bird02_fly",
+  /** Level3 */
+  Level3 = "Bird03_fly",
+}
+
+export enum Level {
+  /** 一点五倍速 */
+  LEVEL1 = "一点五倍速",
+  /** 二倍速 */
+  LEVEL2 = "二倍速",
+  /** 三倍速 */
+  LEVEL3 = "三倍速",
+}

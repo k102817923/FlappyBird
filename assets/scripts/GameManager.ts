@@ -1,11 +1,12 @@
-import { _decorator, Component, Label, Node } from "cc";
+import { _decorator, AudioClip, Component, Label, Node } from "cc";
 import { Bird } from "./Bird";
-import { Status } from "./Enum";
+import { Level, Status } from "./Enum";
 import { Move } from "./Move";
 import { PipeSpawner } from "./PipeSpawner";
 import { ReadyUI } from "./UI/ReadyUI";
 import { GameData } from "./GameData";
 import { GameOverUI } from "./UI/GameOverUI";
+import { AudioMgr } from "./AudioMgr";
 const { ccclass, property } = _decorator;
 
 @ccclass("GameManager")
@@ -16,43 +17,56 @@ export class GameManager extends Component {
     return this.instance;
   }
 
-  @property
-  moveSpeed: number = 100;
-
   @property(Bird)
-  bird: Bird = null;
+  private bird: Bird = null;
 
   @property(Move)
-  bg: Move = null;
+  private bg: Move = null;
 
   @property(Move)
-  land: Move = null;
+  private land: Move = null;
 
   @property(PipeSpawner)
-  pipeSpawner: PipeSpawner = null;
+  private pipeSpawner: PipeSpawner = null;
 
   @property(ReadyUI)
-  readyUI: ReadyUI = null;
+  private readyUI: ReadyUI = null;
 
   @property(Node)
-  runningUI: Node = null;
+  private runningUI: Node = null;
 
   @property(Label)
-  scoreLabel: Label = null;
+  private scoreLabel: Label = null;
+
+  @property(Label)
+  private levelLabel: Label = null;
 
   @property(GameOverUI)
-  gameOverUI: GameOverUI = null;
+  private gameOverUI: GameOverUI = null;
 
-  status: Status;
+  @property(AudioClip)
+  private bgAudio: AudioClip = null;
 
-  start() {
+  @property(AudioClip)
+  private gameOverAudio: AudioClip = null;
+
+  private status: Status;
+
+  public moveSpeed = 100;
+
+  protected onLoad(): void {
     GameManager.instance = this;
-    this.transitionToReady();
   }
 
-  update(deltaTime: number) {}
+  protected start(): void {
+    this.transitionToReady();
+    // 循环播放背景声音
+    AudioMgr.inst.play(this.bgAudio, 0.5);
+  }
 
-  transitionToReady() {
+  protected update(deltaTime: number): void {}
+
+  private transitionToReady() {
     if (this.status === Status.READY) return;
 
     this.status = Status.READY;
@@ -66,7 +80,7 @@ export class GameManager extends Component {
     this.gameOverUI.hide();
   }
 
-  transitionToRunning() {
+  public transitionToRunning() {
     if (this.status === Status.RUNNING) return;
 
     this.status = Status.RUNNING;
@@ -80,7 +94,7 @@ export class GameManager extends Component {
     this.gameOverUI.hide();
   }
 
-  transitionToGameOver() {
+  public transitionToGameOver() {
     if (this.status === Status.GAME_OVER) return;
 
     this.status = Status.GAME_OVER;
@@ -93,10 +107,37 @@ export class GameManager extends Component {
     this.runningUI.active = false;
     this.gameOverUI.show(GameData.getScore(), GameData.getBestScore());
     GameData.setBestScore();
+
+    // 停止背景音乐，播放游戏结束音效
+    AudioMgr.inst.stop();
+    AudioMgr.inst.playOneShot(this.gameOverAudio);
   }
 
-  addScore(score = 1) {
+  public addScore(score = 1) {
+    if (this.status !== Status.RUNNING) return;
     GameData.addScore(score);
     this.scoreLabel.string = GameData.getScore().toString();
+    this.bird.updateAnimation();
+  }
+
+  public updateMoveSpeed(moveSpeed: number) {
+    this.moveSpeed = moveSpeed;
+  }
+
+  public updateLevelLabel(level: Level) {
+    if (this.levelLabel.string === level) return;
+
+    // 显示 levelLabel，更新其内容
+    this.levelLabel.string = level;
+    this.levelLabel.node.active = true;
+
+    // 隐藏 scoreLabel
+    this.scoreLabel.node.active = false;
+
+    // 两秒后隐藏 levelLabel 并恢复显示 scoreLabel
+    this.scheduleOnce(() => {
+      this.levelLabel.node.active = false;
+      this.scoreLabel.node.active = true;
+    }, 2);
   }
 }

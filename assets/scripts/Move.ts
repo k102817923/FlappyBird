@@ -6,26 +6,26 @@ const { ccclass, property } = _decorator;
 @ccclass("Move")
 export class Move extends Component {
   @property(Node)
-  target1ToMove: Node = null;
+  private target1ToMove: Node = null;
 
   @property(Node)
-  target2ToMove: Node = null;
+  private target2ToMove: Node = null;
 
   @property
-  windowsWidth: number = 730;
+  private readonly windowsWidth: number = 730;
 
   @property
-  bg2Position: number = 728;
+  private readonly bg2Position: number = 728;
 
   private moveSpeed: number;
 
-  private status: Status = Status.READY;
+  private status: Status;
 
-  start() {
+  protected start(): void {
     this.moveSpeed = GameManager.getInstance().moveSpeed;
   }
 
-  update(deltaTime: number) {
+  protected update(deltaTime: number): void {
     if (this.status !== Status.RUNNING) return;
 
     const moveDistance = this.moveSpeed * deltaTime;

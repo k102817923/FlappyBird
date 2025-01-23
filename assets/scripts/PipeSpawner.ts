@@ -5,19 +5,28 @@ const { ccclass, property } = _decorator;
 
 @ccclass("PipeSpawner")
 export class PipeSpawner extends Component {
+  private static instance: PipeSpawner = null;
+
+  public static getInstance(): PipeSpawner {
+    return this.instance;
+  }
+
   @property(Prefab)
-  pipePrefab: Prefab = null;
+  private pipePrefab: Prefab = null;
 
-  @property
-  rate: number = 2;
+  private rate = 3;
 
-  private timer: number = 1;
+  private timer = 1;
 
-  private status: Status = Status.READY;
+  private status: Status;
 
-  start() {}
+  protected onLoad(): void {
+    PipeSpawner.instance = this;
+  }
 
-  update(deltaTime: number) {
+  protected start(): void {}
+
+  protected update(deltaTime: number): void {
     if (this.status !== Status.RUNNING) return;
 
     this.timer += deltaTime;
@@ -45,6 +54,18 @@ export class PipeSpawner extends Component {
         const pipe = childrens[i].getComponent(Pipe);
         if (pipe) pipe.enabled = false;
       }
+    }
+  }
+
+  public updateRate(rate: number) {
+    if (this.rate === rate) return;
+
+    this.rate = rate;
+
+    const childrens = this.node.children;
+    for (let i = 0; i < childrens.length; i++) {
+      const pipe = childrens[i].getComponent(Pipe);
+      if (pipe) pipe.node.active = false;
     }
   }
 }

@@ -10,11 +10,11 @@ export class ReadyUI extends Component {
 
   protected onDestroy(): void {}
 
-  start() {}
+  protected start(): void {}
 
-  update(deltaTime: number) {}
+  protected update(deltaTime: number): void {}
 
-  onTouchStart() {
+  private onTouchStart() {
     GameManager.getInstance().transitionToRunning();
   }
 

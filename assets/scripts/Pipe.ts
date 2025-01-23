@@ -6,11 +6,11 @@ const { ccclass } = _decorator;
 export class Pipe extends Component {
   private moveSpeed: number;
 
-  start() {
+  protected start(): void {
     this.moveSpeed = GameManager.getInstance().moveSpeed;
   }
 
-  update(deltaTime: number) {
+  protected update(deltaTime: number): void {
     this.node.setPosition(
       this.node.position.x - this.moveSpeed * deltaTime,
       this.node.position.y
